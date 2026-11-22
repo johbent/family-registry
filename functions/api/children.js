@@ -18,20 +18,16 @@ export async function onRequestGet({ request, env }) {
 
   try {
     const parent = await env.DB.prepare(`
-      SELECT
-        "الاسم",
-        "الاب",
-        "الجد",
-        "العائلة"
+      SELECT "الاسم", "الاب", "العائلة"
       FROM sgaza
       WHERE "الهوية" = ?
     `).bind(id).first();
 
     if (!parent) {
-      return Response.json(
-        { ok: true, children: [] },
-        { headers: { "Cache-Control": "no-store" } }
-      );
+      return Response.json({
+        ok: true,
+        children: []
+      });
     }
 
     const result = await env.DB.prepare(`
@@ -47,19 +43,20 @@ export async function onRequestGet({ request, env }) {
       WHERE "الاب" = ?
         AND "الجد" = ?
         AND "العائلة" = ?
-        AND "العائلة" = ?
+        AND "الهوية" <> ?
       LIMIT 100
     `).bind(
       parent["الاسم"],
       parent["الاب"],
-      parent["الجد"],
-      parent["العائلة"]
+      parent["العائلة"],
+      id
     ).all();
 
     return Response.json(
       { ok: true, children: result.results },
       { headers: { "Cache-Control": "no-store" } }
     );
+
   } catch {
     return Response.json(
       { ok: false, error: "Search failed" },
