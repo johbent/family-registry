@@ -1,0 +1,7 @@
+*.mdb
+*.accdb
+*.rar
+*.csv
+*.json
+!package.json
+node_modules/
