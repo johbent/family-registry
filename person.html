@@ -2,371 +2,218 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>السجل المدني - بيانات السكان</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>السجل المدني 2005 - بيانات السكان</title>
 
-<style>
-* { box-sizing: border-box; }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  margin: 0;
-  font-family: Tahoma, Arial, sans-serif;
-  background: #f1f5f9;
-  color: #172b4d;
-}
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172b4d;
+    }
 
-header {
-  background: #123765;
-  color: white;
-  padding: 22px;
-  text-align: center;
-}
+    header {
+      background: #123765;
+      color: white;
+      padding: 22px;
+      text-align: center;
+    }
 
-header h1 { margin: 0 0 8px; }
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 27px;
+    }
 
-.container {
-  max-width: 1250px;
-  margin: 25px auto;
-  padding: 0 15px;
-}
+    .container {
+      max-width: 1250px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
 
-.panel {
-  background: white;
-  border: 1px solid #d9e2ec;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
+    .panel {
+      background: white;
+      border: 1px solid #d9e2ec;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
 
-h2 {
-  font-size: 19px;
-  border-bottom: 2px solid #dbe7f4;
-  padding-bottom: 12px;
-}
+    h2 {
+      font-size: 19px;
+      border-bottom: 2px solid #dbe7f4;
+      padding-bottom: 12px;
+      margin-top: 0;
+    }
 
-.search {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+    .search {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-input {
-  padding: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 7px;
-  font-size: 16px;
-  flex: 1;
-  min-width: 180px;
-}
+    input {
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 16px;
+      flex: 1;
+      min-width: 180px;
+    }
 
-button {
-  background: #1764a5;
-  color: white;
-  border: 0;
-  border-radius: 7px;
-  padding: 12px 25px;
-  cursor: pointer;
-  font-size: 15px;
-}
+    button {
+      background: #1764a5;
+      color: white;
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 25px;
+      cursor: pointer;
+      font-size: 15px;
+    }
 
-button:hover { background: #104d82; }
+    button:hover {
+      background: #104d82;
+    }
 
-button:disabled {
-  opacity: .6;
-  cursor: wait;
-}
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
 
-.info-item {
-  background: #f8fafc;
-  padding: 12px;
-  border-radius: 7px;
-  overflow-wrap: anywhere;
-}
+    .info-item {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 7px;
+      overflow-wrap: anywhere;
+    }
 
-.info-item strong {
-  display: block;
-  margin-bottom: 7px;
-  color: #52657c;
-}
+    .info-item strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #52657c;
+    }
 
-.table-wrap {
-  overflow-x: auto;
-}
+    .table-wrap {
+      overflow-x: auto;
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  white-space: nowrap;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
 
-th {
-  background: #e7eff8;
-  padding: 12px;
-  text-align: right;
-}
+    th {
+      background: #e7eff8;
+      padding: 12px;
+      text-align: right;
+    }
 
-td {
-  padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
-}
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
 
-tr:hover td { background: #f8fafc; }
+    tr:hover td {
+      background: #f8fafc;
+    }
 
-.status {
-  margin-top: 12px;
-  min-height: 22px;
-}
+    .status {
+      margin-top: 12px;
+      min-height: 22px;
+    }
 
-.empty {
-  padding: 15px;
-  color: #64748b;
-}
+    .empty {
+      padding: 15px;
+      color: #64748b;
+    }
 
-.hidden { display: none; }
+    .hidden {
+      display: none;
+    }
 
-@media(max-width: 700px) {
-  .info-grid { grid-template-columns: 1fr; }
-  .search { flex-direction: column; }
-}
-</style>
+    @media (max-width: 700px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search {
+        flex-direction: column;
+      }
+    }
+  </style>
+
+  <script src="/person.js" defer></script>
 </head>
 
 <body>
 
-<header>
-  <h1>منظومة السجل المدني 2005</h1>
-  <div>دليل السكان والعائلات - نسخة الويب</div>
-</header>
+  <header>
+    <h1>منظومة السجل المدني 2005</h1>
+    <div>دليل السكان والعائلات - نسخة الويب</div>
+  </header>
 
-<main class="container">
+  <main class="container">
 
-<section class="panel">
-  <h2>البحث عن شخص</h2>
+    <section class="panel">
+      <h2>البحث عن شخص</h2>
 
-  <form class="search" id="searchForm">
-    <input
-      id="identity"
-      type="text"
-      inputmode="numeric"
-      maxlength="9"
-      pattern="[0-9]{9}"
-      placeholder="أدخل رقم الهوية"
-      required
-    >
-    <button id="searchBtn" type="submit">
-      بحث عن الشخص
-    </button>
-  </form>
+      <form class="search" id="searchForm">
+        <input
+          id="identity"
+          type="text"
+          inputmode="numeric"
+          maxlength="9"
+          pattern="[0-9]{9}"
+          placeholder="أدخل رقم الهوية"
+          autocomplete="off"
+          required
+        >
 
-  <div id="status" class="status" role="status"></div>
-</section>
+        <button id="searchBtn" type="submit">
+          بحث عن الشخص
+        </button>
+      </form>
 
-<div id="results" class="hidden">
+      <div
+        id="status"
+        class="status"
+        role="status"
+        aria-live="polite"
+      ></div>
+    </section>
 
-<section class="panel">
-  <h2>البيانات الشخصية</h2>
-  <div id="personInfo" class="info-grid"></div>
-</section>
+    <div id="results" class="hidden">
 
-<section class="panel">
-  <h2>الأبناء</h2>
-  <div id="children"></div>
-</section>
+      <section class="panel">
+        <h2>البيانات الشخصية</h2>
+        <div id="personInfo" class="info-grid"></div>
+      </section>
 
-<section class="panel">
-  <h2>الإخوة</h2>
-  <div id="siblings"></div>
-</section>
+      <section class="panel">
+        <h2>الأبناء</h2>
+        <div id="children"></div>
+      </section>
 
-</div>
+      <section class="panel">
+        <h2>الإخوة</h2>
+        <div id="siblings"></div>
+      </section>
 
-</main>
+    </div>
 
-<script>
-const fields = [
-  "الهوية",
-  "الاسم",
-  "الاب",
-  "الجد",
-  "العائلة",
-  "اسم الام",
-  "تاريخ الميلاد"
-];
-
-const personFields = [
-  ...fields,
-  "الحي",
-  "اسم المحافظة"
-];
-
-function displayValue(value) {
-  return value === null || value === undefined ||
-    value === "" ? "—" : String(value);
-}
-
-function renderPerson(person) {
-  const container = document.getElementById("personInfo");
-  container.replaceChildren();
-
-  for (const field of personFields) {
-    const item = document.createElement("div");
-    item.className = "info-item";
-
-    const label = document.createElement("strong");
-    label.textContent = field;
-
-    const value = document.createElement("span");
-    value.textContent = displayValue(person[field]);
-
-    item.append(label, value);
-    container.appendChild(item);
-  }
-}
-
-function renderTable(elementId, records, excludeId = null) {
-  const container = document.getElementById(elementId);
-  container.replaceChildren();
-
-  const rows = Array.isArray(records)
-    ? records.filter(row => row["الهوية"] !== excludeId)
-    : [];
-
-  if (rows.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "لا توجد سجلات مطابقة";
-    container.appendChild(empty);
-    return;
-  }
-
-  const wrapper = document.createElement("div");
-  wrapper.className = "table-wrap";
-
-  const table = document.createElement("table");
-  const thead = document.createElement("thead");
-  const headingRow = document.createElement("tr");
-
-  for (const field of fields) {
-    const th = document.createElement("th");
-    th.textContent = field;
-    headingRow.appendChild(th);
-  }
-
-  thead.appendChild(headingRow);
-  table.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-
-  for (const record of rows) {
-    const tr = document.createElement("tr");
-
-    for (const field of fields) {
-      const td = document.createElement("td");
-      td.textContent = displayValue(record[field]);
-      tr.appendChild(td);
-    }
-
-    tbody.appendChild(tr);
-  }
-
-  table.appendChild(tbody);
-  wrapper.appendChild(table);
-  container.appendChild(wrapper);
-}
-
-async function getJson(path) {
-  const response = await fetch(path, {
-    credentials: "same-origin",
-    cache: "no-store"
-  });
-
-  if (!response.ok) {
-    throw new Error("فشل الاتصال بالخادم: " + response.status);
-  }
-
-  const data = await response.json();
-
-  if (!data.ok) {
-    throw new Error("لم تكتمل عملية البحث");
-  }
-
-  return data;
-}
-
-async function searchPerson(event) {
-  event.preventDefault();
-
-  const id = document.getElementById("identity").value.trim();
-  const status = document.getElementById("status");
-  const results = document.getElementById("results");
-  const button = document.getElementById("searchBtn");
-
-  results.classList.add("hidden");
-
-  if (!/^[0-9]{9}$/.test(id)) {
-    status.textContent = "أدخل رقم هوية مكونًا من 9 أرقام";
-    return;
-  }
-
-  button.disabled = true;
-  status.textContent = "جارٍ البحث...";
-
-  try {
-    const query = "?id=" + encodeURIComponent(id);
-
-    const personData = await getJson("/api/person" + query);
-
-    if (!personData.person) {
-      status.textContent = "لم يتم العثور على الشخص";
-      return;
-    }
-
-    renderPerson(personData.person);
-    results.classList.remove("hidden");
-
-    const [childrenResult, siblingsResult] =
-      await Promise.allSettled([
-        getJson("/api/children" + query),
-        getJson("/api/siblings" + query)
-      ]);
-
-    if (childrenResult.status === "fulfilled") {
-      renderTable("children", childrenResult.value.children);
-    } else {
-      document.getElementById("children").textContent =
-        "تعذر تحميل بيانات الأبناء";
-    }
-
-    if (siblingsResult.status === "fulfilled") {
-      renderTable(
-        "siblings",
-        siblingsResult.value.siblings,
-        id
-      );
-    } else {
-      document.getElementById("siblings").textContent =
-        "تعذر تحميل بيانات الإخوة";
-    }
-
-    status.textContent = "تم العثور على الشخص";
-
-  } catch (error) {
-    status.textContent = error.message;
-  } finally {
-    button.disabled = false;
-  }
-}
-
-document.getElementById("searchForm")
-  .addEventListener("submit", searchPerson);
-</script>
+  </main>
 
 </body>
 </html>
