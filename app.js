@@ -3,7 +3,6 @@
 
 const $ = id => document.getElementById(id);
 const LIMIT = 75;
-const TEST_IDS = new Set(['000000001', '000000002', '000000003']);
 
 let people = [], shown = [], chosen = null, page = 0;
 let csvRows = [], headers = [], dataSource = 'remote';
@@ -927,7 +926,7 @@ $('eraseBtn').onclick = async () => {
   $('search').value = '';
 
   resetRemote(
-    'حُذفت البيانات المحلية. يمكنك البحث في السجلات التجريبية على Cloudflare.'
+    'حُذفت البيانات المحلية. يمكنك البحث في سجلات Cloudflare.'
   );
 };
 
