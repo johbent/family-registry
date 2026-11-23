@@ -1,3 +1,4 @@
+const EXCLUDED_GOVERNORATES = [71, 72, 73, 74, 75, 76, 77, 78, 88];
 
 export async function onRequestGet({ request, env }) {
   const id = new URL(request.url).searchParams.get("id")?.trim();
@@ -6,20 +7,6 @@ export async function onRequestGet({ request, env }) {
     return Response.json(
       { ok: false, error: "Invalid identity number" },
       { status: 400 }
-    );
-  }
-
-  // السماح فقط بالسجلات التجريبية خلال التطوير
-  const testIds = new Set([
-    "000000001",
-    "000000002",
-    "000000003"
-  ]);
-
-  if (!testIds.has(id)) {
-    return Response.json(
-      { ok: false, error: "Access denied" },
-      { status: 403 }
     );
   }
 
@@ -43,6 +30,7 @@ export async function onRequestGet({ request, env }) {
         "الحي"
       FROM sgaza
       WHERE "الهوية" = ?
+        AND COALESCE("رمز المحافظة", -1) NOT IN (${EXCLUDED_GOVERNORATES.join(",")})
     `).bind(id).first();
 
     return Response.json(

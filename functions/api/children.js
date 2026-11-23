@@ -1,14 +1,8 @@
+const EXCLUDED_GOVERNORATES = [71, 72, 73, 74, 75, 76, 77, 78, 88];
 
 export async function onRequestGet({ request, env }) {
   const id = new URL(request.url)
     .searchParams.get("id")?.trim();
-
-  // Only allow test identities during development
-  const testIds = [
-    "000000001",
-    "000000002",
-    "000000003"
-  ];
 
   if (!id || !/^\d{9}$/.test(id)) {
     return Response.json(
@@ -17,16 +11,6 @@ export async function onRequestGet({ request, env }) {
         error: "Invalid identity number"
       },
       { status: 400 }
-    );
-  }
-
-  if (!testIds.includes(id)) {
-    return Response.json(
-      {
-        ok: false,
-        error: "Access denied"
-      },
-      { status: 403 }
     );
   }
 
@@ -48,6 +32,7 @@ export async function onRequestGet({ request, env }) {
         "العائلة"
       FROM sgaza
       WHERE "الهوية" = ?
+        AND COALESCE("رمز المحافظة", -1) NOT IN (${EXCLUDED_GOVERNORATES.join(",")})
     `).bind(id).first();
 
     if (!parent) {
@@ -78,14 +63,13 @@ export async function onRequestGet({ request, env }) {
         AND "الجد" = ?
         AND "العائلة" = ?
         AND "الهوية" <> ?
-        AND "الهوية" IN (?, ?, ?)
+        AND COALESCE("رمز المحافظة", -1) NOT IN (${EXCLUDED_GOVERNORATES.join(",")})
       LIMIT 100
     `).bind(
       parent["الاسم"],
       parent["الاب"],
       parent["العائلة"],
-      id,
-      ...testIds
+      id
     ).all();
 
     return Response.json(

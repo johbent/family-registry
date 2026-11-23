@@ -446,7 +446,7 @@ function renderProfile(
       : cards(children)}
 
     ${dataSource === 'remote'
-      ? '<p class="hint">العلاقات مستنتجة من تطابق الأسماء وليست إثباتًا رسميًا للقرابة. البحث محصور بالسجلات التجريبية.</p>'
+      ? '<p class="hint">العلاقات مستنتجة من تطابق الأسماء وليست إثباتًا رسميًا للقرابة.</p>'
       : ''}
   `;
 
@@ -474,6 +474,18 @@ async function apiGet(path, id) {
     throw Error(data.error || 'Search failed');
   }
 
+  return data;
+}
+
+async function apiSearch(query) {
+  const response = await fetch(
+    `/api/search?q=${encodeURIComponent(query)}`,
+    { cache: 'no-store', credentials: 'same-origin' }
+  );
+  const data = await response.json();
+  if (!response.ok || !data.ok) {
+    throw Error(data.error || 'Search failed');
+  }
   return data;
 }
 
@@ -512,17 +524,12 @@ async function show(id) {
     ) return;
 
     const children = results[0].status === 'fulfilled'
-      ? (results[0].value.children || [])
-          .filter(x => TEST_IDS.has(String(x['الهوية'])))
-          .map(fromD1)
+      ? (results[0].value.children || []).map(fromD1)
       : [];
 
     const siblings = results[1].status === 'fulfilled'
       ? (results[1].value.siblings || [])
-          .filter(x =>
-            TEST_IDS.has(String(x['الهوية'])) &&
-            String(x['الهوية']) !== p.id
-          )
+          .filter(x => String(x['الهوية']) !== p.id)
           .map(fromD1)
       : [];
 
@@ -550,8 +557,6 @@ async function goToPerson(id) {
     return;
   }
 
-  if (!TEST_IDS.has(id)) return;
-
   $('search').value = id;
   await lookupPerson(id);
 }
@@ -570,7 +575,7 @@ function resetRemote(message) {
   $('profile').innerHTML = `
     <h2>بيانات الشخص</h2>
     <p class="muted">
-      ابحث عن سجل تجريبي لعرض شجرة العائلة.
+      اكتب اسمًا أو رقم الهوية لعرض شجرة العائلة.
     </p>
   `;
 
@@ -583,17 +588,10 @@ function resetRemote(message) {
 
 async function lookupPerson(inputId) {
   const sequence = ++lookupSequence;
-  const id = String(inputId ?? $('search').value).trim();
+  const query = String(inputId ?? $('search').value).trim();
 
-  if (!/^\d{9}$/.test(id)) {
-    resetRemote('أدخل رقم هوية تجريبيًا من 9 أرقام.');
-    return;
-  }
-
-  if (!TEST_IDS.has(id)) {
-    resetRemote(
-      'البحث مسموح فقط بالسجلات التجريبية الثلاثة.'
-    );
+  if (query.length < 2) {
+    resetRemote('اكتب اسمًا أو رقم هوية من رقمين على الأقل.');
     return;
   }
 
@@ -601,35 +599,24 @@ async function lookupPerson(inputId) {
     'جارٍ البحث في Cloudflare D1...';
 
   try {
-    const data = await apiGet('/api/person', id);
+    const data = await apiSearch(query);
 
     if (
       sequence !== lookupSequence ||
       dataSource !== 'remote'
     ) return;
 
-    if (!data.person) {
-      resetRemote('لم يُعثر على السجل التجريبي.');
+    if (!data.people?.length) {
+      resetRemote('لم يُعثر على نتائج مطابقة.');
       return;
     }
 
-    people = [fromD1(data.person)];
+    people = data.people.map(fromD1);
     chosen = null;
     index();
 
     $('status').textContent =
-      'تم العثور على السجل، وجارٍ عرض العلاقات.';
-
-    await show(people[0].id);
-
-    if (
-      sequence === lookupSequence &&
-      dataSource === 'remote' &&
-      !$('status').textContent.includes('تعذر')
-    ) {
-      $('status').textContent =
-        'تم عرض بيانات الشخص وروابط القرابة التجريبية.';
-    }
+      `تم العثور على ${people.length.toLocaleString('ar')} نتيجة.`;
 
   } catch (e) {
     if (
@@ -949,5 +936,5 @@ $('eraseBtn').onclick = async () => {
 // =====================================
 
 resetRemote(
-  'أدخل رقم هوية تجريبيًا من 9 أرقام لعرض شجرة العائلة من Cloudflare D1.'
+  'اكتب اسمًا أو رقم هوية للبحث في قاعدة Cloudflare D1.'
 );
