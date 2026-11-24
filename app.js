@@ -7,7 +7,7 @@ const LIMIT = 75;
 let people = [], shown = [], chosen = null, page = 0;
 let csvRows = [], headers = [], dataSource = 'remote';
 let cache = new Map(), nameMap = new Map(), childrenMap = new Map();
-let lookupSequence = 0, detailSequence = 0;
+let lookupSequence = 0, detailSequence = 0, searchTimer = null;
 
 // =====================================
 // CSV field configuration
@@ -631,7 +631,26 @@ async function lookupPerson(inputId) {
 // UI event handlers
 // =====================================
 
-$('search').oninput = () => {
+  $('search').oninput = () => {
+  if (dataSource === 'local') {
+    filter();
+    return;
+  }
+
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => lookupPerson(), 600);
+};
+
+$('search').onkeydown = event => {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  clearTimeout(searchTimer);
+  if (dataSource === 'local') filter();
+  else lookupPerson();
+};
+
+$('searchBtn').onclick = () => {
+  clearTimeout(searchTimer);
   if (dataSource === 'local') filter();
   else lookupPerson();
 };
