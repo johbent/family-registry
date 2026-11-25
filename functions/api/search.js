@@ -16,6 +16,13 @@ export async function onRequestGet({ request, env }) {
   }
 
   const like = `${q}%`;
+  const numericQuery = /^\d+$/.test(q);
+  const normalizedId = numericQuery
+    ? q.replace(/^0+(?=\d)/, "")
+    : q;
+  const paddedId = numericQuery
+    ? q.padStart(9, "0")
+    : q;
   try {
     const result = await env.DB.prepare(`
       SELECT
@@ -24,7 +31,7 @@ export async function onRequestGet({ request, env }) {
       FROM sgaza
       WHERE COALESCE("رمز المحافظة", -1) NOT IN (${EXCLUDED_GOVERNORATES.join(",")})
         AND (
-          "الهوية" = ? OR
+          "الهوية" IN (?, ?, ?) OR
           "الاسم" LIKE ? OR
           "الاب" LIKE ? OR
           "الجد" LIKE ? OR
@@ -32,7 +39,10 @@ export async function onRequestGet({ request, env }) {
         )
       ORDER BY "الاسم", "الهوية"
       LIMIT 75
-    `).bind(q, like, like, like, like).all();
+    `).bind(
+      q, normalizedId, paddedId,
+      like, like, like, like
+    ).all();
 
     return Response.json(
       { ok: true, people: result.results ?? [] },
