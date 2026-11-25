@@ -23,6 +23,13 @@ export async function onRequestGet({ request, env }) {
   const paddedId = numericQuery
     ? q.padStart(9, "0")
     : q;
+  const nameParts = q.split(/\s+/).filter(Boolean).slice(0, 4);
+  const nameFields = ["الاسم", "الاب", "الجد", "العائلة"];
+  const fullNameClause = nameParts.length > 1
+    ? nameParts
+        .map((_, index) => `"${nameFields[index]}" LIKE ?`)
+        .join(" AND ")
+    : "0";
   try {
     const result = await env.DB.prepare(`
       SELECT
@@ -35,13 +42,15 @@ export async function onRequestGet({ request, env }) {
           "الاسم" LIKE ? OR
           "الاب" LIKE ? OR
           "الجد" LIKE ? OR
-          "العائلة" LIKE ?
+          "العائلة" LIKE ? OR
+          (${fullNameClause})
         )
       ORDER BY "الاسم", "الهوية"
       LIMIT 75
     `).bind(
       q, normalizedId, paddedId,
-      like, like, like, like
+      like, like, like, like,
+      ...nameParts.map(part => `${part}%`)
     ).all();
 
     return Response.json(
